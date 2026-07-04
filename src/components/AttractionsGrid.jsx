@@ -1,12 +1,152 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, MapPin, Star, Compass, Info, X, ExternalLink } from 'lucide-react';
+import { Sparkles, MapPin, Star, Globe, X, ExternalLink } from 'lucide-react';
 import { getFoursquarePlaces } from '../services/foursquareService';
 
-export default function AttractionsGrid({ destination, apiKey }) {
+// AI Behavior Constraints and Mock Responses mapped by Vibe
+const AI_BEHAVIORS = {
+  peace: {
+    description: "Focus on low density, aesthetic appeal, and slow travel principles.",
+    mockResponse: {
+      whyMatchesVibe: "This peaceful spot aligns with your slow travel vibe. It offers a beautiful, low-density aesthetic where you can unwind and take in the natural surroundings in complete tranquility.",
+      storyOfPlace: "Originally designed as a sanctuary of retreat, this location has been preserved for centuries to maintain its pristine quiet. Its landscaping reflects an ancient philosophy of mindfulness and garden design.",
+      localsDo: "Locals visit early at sunrise to sit on the benches near the water, meditate, and enjoy the clean breeze before the city wakes up."
+    }
+  },
+  food: {
+    description: "Focus on flavor-first reviews and local culinary authenticity.",
+    mockResponse: {
+      whyMatchesVibe: "A culinary icon centered on flavor-first authenticity. It satisfies your appetite for genuine local flavors prepared with recipes passed down through generations.",
+      storyOfPlace: "What started as a simple family kitchen evolved into a legendary destination. It has survived changing municipal layouts by relying on its core commitment to regional herbs and high-quality ingredients.",
+      localsDo: "Locals skip the main queue by ordering the daily special directly from the kitchen window, then enjoying it on the nearby stone steps."
+    }
+  },
+  adventure: {
+    description: "Focus on novelty, physical distance bias, and uniqueness scoring.",
+    mockResponse: {
+      whyMatchesVibe: "A high-novelty adventure destination that scores extremely high on uniqueness. It pushes you off the beaten path into an exciting experience you won't find anywhere else.",
+      storyOfPlace: "Hidden away in an unexplored pocket, this area was historically used by local scouts and trailblazers. Its rugged structures and geological formations have stood unchanged for centuries.",
+      localsDo: "Locals gather here on weekends for hiking, cycling, or climbing along the secret trails, packing regional trail mixes for the journey."
+    }
+  },
+  entertainment: {
+    description: "Focus on time-sensitive, trending activities and high social energy.",
+    mockResponse: {
+      whyMatchesVibe: "Vibrant with high social energy, this trending entertainment hub is perfect for experiencing what is happening in the city right now.",
+      storyOfPlace: "Hosting a rotating lineup of concerts, pop-ups, and exhibitions, this venue has always been the heart of the city's nightlife and creative communities.",
+      localsDo: "Locals check the digital bulletin board for surprise guest performances, arriving late in the evening to mingle at the local courtyard drinks bar."
+    }
+  }
+};
+
+// Custom 3D Tilt Card Wrapper Component
+function TiltCard({ place, onClick, index }) {
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+  const [mouseX, setMouseX] = useState(0);
+  const [mouseY, setMouseY] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const card = e.currentTarget;
+    const box = card.getBoundingClientRect();
+    const x = e.clientX - box.left - box.width / 2;
+    const y = e.clientY - box.top - box.height / 2;
+    
+    // Smooth 3D tilt calculations (max 7 degrees)
+    setRotateX((y / (box.height / 2)) * -7);
+    setRotateY((x / (box.width / 2)) * 7);
+    
+    // Parallax background translation (max 10px translate)
+    setMouseX((x / (box.width / 2)) * 10);
+    setMouseY((y / (box.height / 2)) * 10);
+  };
+
+  const handleMouseEnter = () => setIsHovered(true);
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    setRotateX(0);
+    setRotateY(0);
+    setMouseX(0);
+    setMouseY(0);
+  };
+
+  // Bento Grid size mapping based on index for architectural variation
+  let spanClass = "h-[320px]";
+  if (index === 0) {
+    spanClass = "h-[360px] md:col-span-2";
+  } else if (index === 3) {
+    spanClass = "h-[420px]";
+  } else if (index === 5) {
+    spanClass = "h-[380px] md:col-span-2 lg:col-span-1";
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        transform: `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(${isHovered ? 1.025 : 1}, ${isHovered ? 1.025 : 1}, 1)`,
+        transition: isHovered ? 'none' : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
+        willChange: 'transform'
+      }}
+      className={`group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer bg-zinc-950 border border-zinc-200/20 dark:border-zinc-800/60 ${spanClass}`}
+    >
+      {/* Parallax Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center pointer-events-none"
+        style={{ 
+          backgroundImage: `url(${place.imageUrl})`,
+          transform: `scale(1.18) translate(${mouseX}px, ${mouseY}px)`,
+          transition: isHovered ? 'none' : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)'
+        }}
+      />
+      
+      {/* Dark Vibe Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/45 to-transparent opacity-90" />
+      <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-950/20 opacity-40" />
+
+      {/* Card Info Overlay */}
+      <div className="absolute inset-0 flex flex-col justify-between p-6 z-10 text-white select-none">
+        
+        {/* Top Badges */}
+        <div className="flex justify-between items-start">
+          <span className="text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full border border-white/10">
+            {place.category}
+          </span>
+          <div className="flex items-center gap-1 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-xs font-bold text-amber-400">
+            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+            <span>{place.rating}</span>
+          </div>
+        </div>
+
+        {/* Bottom Title & 1-line AI vibe */}
+        <div className="space-y-2">
+          <h3 className="text-xl font-black tracking-tight leading-tight group-hover:text-indigo-300 transition-colors">
+            {place.name}
+          </h3>
+          
+          <p className="text-xs text-indigo-200/90 font-sans font-light tracking-wide leading-relaxed italic line-clamp-2">
+            ✨ {place.vibeDescription}
+          </p>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
   const [places, setPlaces] = useState([]);
   const [activeFilter, setActiveFilter] = useState('All');
   const [loading, setLoading] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
+  
+  // AI details layer states
+  const [aiData, setAiData] = useState(null);
+  const [loadingAi, setLoadingAi] = useState(false);
 
   useEffect(() => {
     const loadPlaces = async () => {
@@ -18,6 +158,64 @@ export default function AttractionsGrid({ destination, apiKey }) {
     loadPlaces();
   }, [destination.id, apiKey]);
 
+  // Load dynamic Gemini or local matched vibe insights
+  useEffect(() => {
+    if (!selectedPlace) {
+      setAiData(null);
+      return;
+    }
+
+    const fetchAiData = async () => {
+      setLoadingAi(true);
+      const moodText = selectedMood?.label || 'general discovery';
+      const moodId = selectedMood?.id || 'peace';
+      const behavior = AI_BEHAVIORS[moodId] || AI_BEHAVIORS.peace;
+      
+      const keySet = apiKey && apiKey !== 'enter api key' && apiKey !== '';
+
+      if (keySet) {
+        try {
+          const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [{
+                  text: `You are an expert cultural guide. The user is visiting ${selectedPlace.name} in the mood for "${moodText}".
+                  Apply these AI behavior constraints to your answer: ${behavior.description}
+                  Provide a JSON response with exactly three fields (no markdown, no backticks, raw JSON only):
+                  1. "whyMatchesVibe": A short, inspiring 2-sentence explanation of how this place satisfies the "${moodText}" vibe based on the behavior constraints.
+                  2. "storyOfPlace": A fascinating, mysterious 3-sentence historical or cultural story about this place.
+                  3. "localsDo": A 2-sentence description of what local residents do here to experience it authentically.
+                  `
+                }]
+              }],
+              generationConfig: { responseMimeType: "application/json" }
+            })
+          });
+          
+          const result = await response.json();
+          const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+          const parsed = JSON.parse(text);
+          setAiData(parsed);
+        } catch (error) {
+          console.warn("Gemini fetch failed, using local mock matches:", error);
+          setAiData(behavior.mockResponse);
+        }
+      } else {
+        // Geolocation simulated delay for high fidelity AI feel
+        setTimeout(() => {
+          setAiData(behavior.mockResponse);
+          setLoadingAi(false);
+        }, 600);
+        return;
+      }
+      setLoadingAi(false);
+    };
+
+    fetchAiData();
+  }, [selectedPlace, apiKey, selectedMood]);
+
   const categories = ['All', 'Culture & Heritage', 'Hidden Gems', 'Culinary & Dining'];
 
   const filteredPlaces = activeFilter === 'All' 
@@ -26,18 +224,18 @@ export default function AttractionsGrid({ destination, apiKey }) {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-pulse">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 animate-pulse pt-4">
         {[1, 2, 3, 4, 5, 6].map(i => (
-          <div key={i} className="h-64 bg-zinc-100 dark:bg-zinc-800 rounded-3xl border border-zinc-200/40 dark:border-zinc-800" />
+          <div key={i} className="h-64 bg-zinc-200/50 dark:bg-zinc-800/40 rounded-3xl border border-zinc-200/40 dark:border-zinc-850" />
         ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       
-      {/* Filters Row */}
+      {/* Category Filter Selector Pills */}
       <div className="flex flex-wrap gap-2 justify-center">
         {categories.map((cat) => (
           <button
@@ -45,8 +243,8 @@ export default function AttractionsGrid({ destination, apiKey }) {
             onClick={() => setActiveFilter(cat)}
             className={`px-4 py-2 text-xs font-semibold rounded-full transition-all duration-300 ${
               activeFilter === cat
-                ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/10'
-                : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700'
+                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/10'
+                : 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-250 dark:hover:bg-zinc-700'
             }`}
           >
             {cat}
@@ -54,122 +252,133 @@ export default function AttractionsGrid({ destination, apiKey }) {
         ))}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {filteredPlaces.map((place) => (
-          <div
+      {/* Bento Layout Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredPlaces.map((place, idx) => (
+          <TiltCard
             key={place.fsq_id}
+            place={place}
+            index={idx}
             onClick={() => setSelectedPlace(place)}
-            className="group bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-300 dark:hover:border-zinc-750 hover:shadow-lg rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 flex flex-col justify-between"
-          >
-            {/* Visual Header */}
-            <div className="p-5 space-y-3">
-              <div className="flex justify-between items-start">
-                <span className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${
-                  place.is_hidden_gem 
-                    ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/50' 
-                    : 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200/50'
-                }`}>
-                  {place.category}
-                </span>
-
-                <div className="flex items-center gap-1 text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                  <span>{place.rating}</span>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-zinc-950 dark:text-zinc-50 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors line-clamp-1 leading-snug">
-                  {place.name}
-                </h3>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed">
-                  {place.description}
-                </p>
-              </div>
-            </div>
-
-            {/* Visual Footer */}
-            <div className="px-5 py-4 border-t border-zinc-100 dark:border-zinc-800/60 bg-zinc-50/50 dark:bg-zinc-900/40 flex items-center justify-between text-xs text-zinc-400 dark:text-zinc-500">
-              <span className="flex items-center gap-1 font-mono text-[10px] truncate max-w-[70%]">
-                <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                {place.address}
-              </span>
-              
-              <span className="text-[10px] bg-zinc-200/70 dark:bg-zinc-800 px-2 py-0.5 rounded font-medium flex-shrink-0">
-                {place.reviewCount} tips
-              </span>
-            </div>
-          </div>
+          />
         ))}
       </div>
 
-      {/* Place Details Modal */}
+      {/* Place Details Modal (AI matched layer) */}
       {selectedPlace && (
-        <div className="fixed inset-0 bg-zinc-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-scale-up">
+        <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
             
-            {/* Modal Image Header */}
-            <div className="h-44 relative bg-cover bg-center" style={{ backgroundImage: `url(${selectedPlace.imageUrl})` }}>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/75 to-transparent" />
+            {/* Modal Image Header Banner */}
+            <div className="h-56 relative bg-cover bg-center flex-shrink-0" style={{ backgroundImage: `url(${selectedPlace.imageUrl})` }}>
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
+              
+              {/* Close Button */}
               <button
                 onClick={() => setSelectedPlace(null)}
-                className="absolute top-4 right-4 bg-black/45 text-white hover:bg-black/70 p-1.5 rounded-full transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-white hover:bg-black/85 p-2 rounded-full border border-white/10 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
               
-              <div className="absolute bottom-4 left-6 right-6 text-white space-y-1">
-                <span className="text-[10px] uppercase font-bold px-2 py-0.5 bg-emerald-600 rounded-full">
+              <div className="absolute bottom-4 left-6 right-6 text-white space-y-1.5">
+                <span className="text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 bg-indigo-600 rounded-full border border-indigo-500">
                   {selectedPlace.category}
                 </span>
-                <h4 className="text-xl font-bold tracking-tight line-clamp-1">
+                <h4 className="text-2xl font-black tracking-tight leading-tight line-clamp-1">
                   {selectedPlace.name}
                 </h4>
               </div>
             </div>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-5">
+            {/* Scrollable Modal Content */}
+            <div className="p-6 overflow-y-auto space-y-6 flex-grow">
               
-              {/* Rating and review section */}
-              <div className="flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-4">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4 border-b border-zinc-100 dark:border-zinc-800/80 pb-5 text-xs">
                 <div>
-                  <p className="text-xs text-zinc-400">Visitor Rating</p>
-                  <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[10px] uppercase font-bold text-zinc-400">Visitor Rating</span>
+                  <div className="flex items-center gap-1 mt-1">
                     <Star className="w-4.5 h-4.5 fill-amber-400 text-amber-400" />
-                    <span className="text-lg font-bold text-zinc-950 dark:text-zinc-50">{selectedPlace.rating}</span>
-                    <span className="text-xs text-zinc-400">/ 10</span>
+                    <span className="text-lg font-extrabold text-zinc-950 dark:text-zinc-50">{selectedPlace.rating}</span>
+                    <span className="text-zinc-400">/ 10</span>
                   </div>
                 </div>
-
                 <div className="text-right">
-                  <p className="text-xs text-zinc-400">Total Check-Ins / Tips</p>
-                  <p className="text-base font-bold text-zinc-900 dark:text-zinc-100 mt-0.5">
-                    {selectedPlace.reviewCount} reviews
+                  <span className="text-[10px] uppercase font-bold text-zinc-400">Locals Tips Count</span>
+                  <p className="text-lg font-extrabold text-zinc-950 dark:text-zinc-50 mt-1">
+                    {selectedPlace.reviewCount} tips
                   </p>
                 </div>
               </div>
 
-              {/* Description */}
-              <div className="space-y-1">
-                <h5 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">About</h5>
-                <p className="text-sm text-zinc-600 dark:text-zinc-300 leading-relaxed font-sans font-light">
-                  {selectedPlace.description}
-                </p>
+              {/* AI MATCH LAYER: Killer feature */}
+              <div className="space-y-4 bg-indigo-50/40 dark:bg-indigo-950/20 border border-indigo-100/40 dark:border-indigo-900/30 p-5 rounded-2xl">
+                
+                <h5 className="text-[10px] tracking-wider uppercase font-extrabold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                  Under-The-Radar AI Insights
+                </h5>
+
+                {loadingAi ? (
+                  <div className="space-y-3 py-2 animate-pulse">
+                    <div className="h-4 bg-indigo-200/30 dark:bg-indigo-900/20 rounded w-3/4" />
+                    <div className="h-4 bg-indigo-200/30 dark:bg-indigo-900/20 rounded w-5/6" />
+                    <div className="h-4 bg-indigo-200/30 dark:bg-indigo-900/20 rounded w-2/3" />
+                  </div>
+                ) : aiData ? (
+                  <div className="space-y-4 text-xs leading-relaxed text-zinc-600 dark:text-zinc-300">
+                    
+                    {/* Why matches vibe */}
+                    <div className="space-y-1">
+                      <p className="font-bold text-indigo-700 dark:text-indigo-300">
+                        Why this matches your "{selectedMood?.label || 'discovery'}" vibe:
+                      </p>
+                      <p className="font-light font-sans">{aiData.whyMatchesVibe}</p>
+                    </div>
+
+                    {/* Story of the place */}
+                    <div className="space-y-1">
+                      <p className="font-bold text-indigo-700 dark:text-indigo-300">
+                        The Story under the hood:
+                      </p>
+                      <p className="font-light font-sans">{aiData.storyOfPlace}</p>
+                    </div>
+
+                    {/* What locals do */}
+                    <div className="space-y-1">
+                      <p className="font-bold text-indigo-700 dark:text-indigo-300">
+                        What locals do here:
+                      </p>
+                      <p className="font-light font-sans">{aiData.localsDo}</p>
+                    </div>
+
+                  </div>
+                ) : (
+                  <p className="text-xs text-zinc-400">Failed to load AI vibe insights. Check your connection.</p>
+                )}
               </div>
 
-              {/* Address */}
-              <div className="space-y-2">
-                <h5 className="text-xs font-bold text-zinc-400 uppercase tracking-wider">Address</h5>
-                <p className="text-sm text-zinc-700 dark:text-zinc-300 flex items-center gap-1.5 font-mono text-xs">
-                  <MapPin className="w-4.5 h-4.5 text-emerald-500 flex-shrink-0" />
-                  {selectedPlace.address}
-                </p>
+              {/* Basic Details / Address */}
+              <div className="space-y-3">
+                <div className="space-y-1">
+                  <h6 className="text-[9px] uppercase tracking-wider font-extrabold text-zinc-400">Description</h6>
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed font-sans font-light">
+                    {selectedPlace.description}
+                  </p>
+                </div>
+
+                <div className="space-y-1">
+                  <h6 className="text-[9px] uppercase tracking-wider font-extrabold text-zinc-400">Address</h6>
+                  <p className="text-xs text-zinc-700 dark:text-zinc-400 font-mono flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-indigo-500" />
+                    {selectedPlace.address}
+                  </p>
+                </div>
               </div>
 
-              {/* Custom Action links */}
-              <div className="pt-2 flex items-center gap-2">
+              {/* Action Buttons */}
+              <div className="pt-2 flex items-center gap-2 flex-shrink-0">
                 <a
                   href={`https://maps.google.com/?q=${encodeURIComponent(selectedPlace.name + " " + selectedPlace.address)}`}
                   target="_blank"
@@ -182,7 +391,7 @@ export default function AttractionsGrid({ destination, apiKey }) {
                   href={`https://foursquare.com/v/${selectedPlace.fsq_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-12 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 hover:bg-emerald-100 p-2.5 rounded-xl border border-emerald-100 dark:border-emerald-900/30 flex items-center justify-center transition-colors"
+                  className="w-12 bg-indigo-50 dark:bg-indigo-950/20 text-indigo-600 hover:bg-indigo-100 p-2.5 rounded-xl border border-indigo-100 dark:border-indigo-900/30 flex items-center justify-center transition-colors"
                   title="View on Foursquare"
                 >
                   <ExternalLink className="w-4 h-4" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Compass, Settings, Sun, Moon, Sparkles } from 'lucide-react';
+import { Globe, Settings, Sun, Moon, Sparkles } from 'lucide-react';
 
 export default function Header({ 
   onOpenSettings, 
@@ -18,18 +18,18 @@ export default function Header({
           onClick={onBackToHome}
           className="flex items-center gap-2.5 cursor-pointer group"
         >
-          <div className="p-2 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-xl group-hover:scale-105 transition-transform duration-300">
-            <Compass className="w-6 h-6 animate-pulse" />
+          <div className="p-2 bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 rounded-xl group-hover:scale-105 transition-transform duration-300">
+            <Globe className="w-6 h-6 animate-pulse" />
           </div>
           <div>
             <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white flex items-center gap-1.5">
-              AuraQuest
+              Under-The-Radar
               <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5">
                 <Sparkles className="w-3 h-3" /> GenAI
               </span>
             </h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400 hidden sm:block">
-              Cultural Exploration & Hidden Gems
+              Vibe-based Travel Intelligence
             </p>
           </div>
         </div>
