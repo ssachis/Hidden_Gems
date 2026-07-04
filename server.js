@@ -125,7 +125,21 @@ app.get('/api/places', async (req, res) => {
     res.json(places);
   } catch (error) {
     console.error('[Server] Foursquare API Error. Key is present but query failed:', error.message);
-    res.json([]);
+    
+    // Fallback to high-fidelity mock data if the API key is unauthorized or fails
+    console.log('[Server] Falling back to local mock data due to API failure.');
+    const mockAttractions = destination?.attractions || [];
+    const filteredMocks = mockAttractions.filter(p => {
+      if (type === 'dining') return p.category === 'Culinary & Dining';
+      return p.category !== 'Culinary & Dining';
+    });
+    
+    const augmented = filteredMocks.map(p => ({
+      ...p,
+      imageUrl: p.imageUrl || resolveImage(p.name, p.category),
+      vibeDescription: p.vibeDescription || `A tucked-away spot reflecting the authentic local character.`
+    }));
+    return res.json(augmented);
   }
 });
 
