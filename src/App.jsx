@@ -150,7 +150,7 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-900 dark:bg-zinc-950 text-white dark:text-zinc-50 transition-colors duration-300 flex flex-col font-sans">
+    <div className="min-h-screen bg-zinc-50 dark:bg-white text-zinc-900 dark:text-zinc-50 transition-colors duration-300 flex flex-col font-sans">
 
       {/* Header component - hidden on fullscreen onboarding landing */}
       {currentScreen !== 'landing' && (
@@ -193,14 +193,14 @@ export default function App() {
             {/* Navigation back helper */}
             <button
               onClick={handleBackToMood}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
             >
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               Back to Mood Selector
             </button>
 
             {/* Destination Metadata Showcase Card */}
-            <div className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="bg-white dark:bg-zinc-50 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase tracking-wider">
                   <MapPin className="w-3.5 h-3.5" />
@@ -235,7 +235,7 @@ export default function App() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-all rounded-t-xl border-b-2 -mb-[2px] ${activeTab === tab.id
                     ? 'border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 bg-emerald-50/10 dark:bg-emerald-950/10'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200'
                     }`}
                 >
                   {tab.label}
@@ -279,7 +279,7 @@ export default function App() {
 
       {/* Footer */}
       {currentScreen !== 'landing' && (
-        <footer className="border-t border-zinc-200 dark:border-zinc-800 py-6 text-center text-xs text-zinc-400 dark:text-zinc-500 bg-zinc-950 dark:bg-zinc-950">
+        <footer className="border-t border-zinc-200 dark:border-zinc-800 py-6 text-center text-xs text-zinc-400 dark:text-zinc-500 bg-white dark:bg-white">
           <p>© 2026 Under-The-Radar. Crafted with Gemini 3.5 & Foursquare APIs.</p>
         </footer>
       )}

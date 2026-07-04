@@ -65,32 +65,10 @@ export const getFoursquarePlaces = async (cityId) => {
       const response = await axios.get(`/api/places?cityId=${cityId}`);
       return response.data;
     } catch (err) {
-      console.warn("[Foursquare] Local proxy failed or offline:", err.message);
+      console.error("[Foursquare] Local proxy failed or offline:", err.message);
+      return [];
     }
   }
-
-  console.log(`[Foursquare] Falling back to mock data for: ${cityId}`);
-  let rawPlaces = MOCK_DESTINATIONS[cityId]?.attractions || [];
   
-  // Augment places with beautiful images and 1-line AI vibe descriptions
-  return rawPlaces.map((p) => {
-    const imageUrl = p.imageUrl || resolveImage(p.name, p.category);
-    
-    let vibeDescription = p.vibeDescription;
-    if (!vibeDescription) {
-      if (p.category === 'Hidden Gems') {
-        vibeDescription = `A tucked-away sanctuary radiating quiet mystery and authentic local character.`;
-      } else if (p.category === 'Culinary & Dining') {
-        vibeDescription = `A sensory culinary trip offering traditional, intense flavors beloved by local families.`;
-      } else {
-        vibeDescription = `A storied historical monument reflecting the deep, structural heritage of the location.`;
-      }
-    }
-
-    return {
-      ...p,
-      imageUrl,
-      vibeDescription
-    };
-  });
+  return [];
 };

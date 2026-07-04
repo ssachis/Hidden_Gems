@@ -44,7 +44,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
       <div>
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
           Change Location
@@ -73,7 +73,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
           <div
             key={mood.id}
             onClick={() => onSelectMood(mood)}
-            className="group relative h-[360px] rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-md hover:shadow-2xl cursor-pointer transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-end p-6 bg-zinc-950"
+            className="group relative h-[360px] rounded-3xl overflow-hidden border border-zinc-200 dark:border-zinc-800 shadow-md hover:shadow-2xl cursor-pointer transition-all duration-500 hover:-translate-y-1.5 flex flex-col justify-end p-6 bg-white"
           >
             {/* Background cover */}
             <div 
@@ -85,7 +85,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
             <div className={`absolute inset-0 bg-gradient-to-br ${mood.color} opacity-40`} />
 
             {/* Info */}
-            <div className="relative z-10 space-y-3.5 text-white">
+            <div className="relative z-10 space-y-3.5 text-zinc-900">
               <h3 className="text-lg font-extrabold tracking-tight leading-tight flex items-center gap-1.5 group-hover:text-indigo-400 transition-colors">
                 {mood.label}
               </h3>
@@ -99,7 +99,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
                 {mood.tags.map((tag, tIdx) => (
                   <span 
                     key={tIdx} 
-                    className="text-[9px] bg-zinc-950/10 text-zinc-100 border border-white/5 px-2 py-0.5 rounded-full font-sans font-medium"
+                    className="text-[9px] bg-white/10 text-zinc-800 border border-white/5 px-2 py-0.5 rounded-full font-sans font-medium"
                   >
                     {tag}
                   </span>
@@ -108,7 +108,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
 
               <div className="pt-2 flex items-center justify-between text-[10px] font-bold text-indigo-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                 <span>Select mood</span>
-                <span className="p-1 bg-indigo-600 text-white rounded-lg flex items-center justify-center">
+                <span className="p-1 bg-indigo-600 text-zinc-900 rounded-lg flex items-center justify-center">
                   <Sparkles className="w-3.5 h-3.5" />
                 </span>
               </div>

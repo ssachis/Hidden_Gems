@@ -95,7 +95,7 @@ function TiltCard({ place, onClick, index }) {
         transition: isHovered ? 'none' : 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
         willChange: 'transform'
       }}
-      className={`group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer bg-zinc-950 border border-zinc-200/20 dark:border-zinc-800/60 ${spanClass}`}
+      className={`group relative rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl cursor-pointer bg-white border border-zinc-200/20 dark:border-zinc-800/60 ${spanClass}`}
     >
       {/* Parallax Background Image */}
       <div 
@@ -112,7 +112,7 @@ function TiltCard({ place, onClick, index }) {
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-950/20 opacity-40" />
 
       {/* Card Info Overlay */}
-      <div className="absolute inset-0 flex flex-col justify-between p-6 z-10 text-white select-none">
+      <div className="absolute inset-0 flex flex-col justify-between p-6 z-10 text-zinc-900 select-none">
         
         {/* Top Badges */}
         <div className="flex justify-between items-start">
@@ -270,7 +270,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
             onClick={() => setActiveFilter(cat)}
             className={`px-4 py-2 text-xs font-semibold rounded-full transition-all duration-300 ${
               activeFilter === cat
-                ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/10'
+                ? 'bg-indigo-600 text-zinc-900 shadow-md shadow-indigo-600/10'
                 : 'bg-zinc-100 dark:bg-zinc-800/60 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-250 dark:hover:bg-zinc-700'
             }`}
           >
@@ -293,8 +293,8 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
 
       {/* Place Details Modal (AI matched layer) */}
       {selectedPlace && (
-        <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
+        <div className="fixed inset-0 bg-white/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-zinc-50 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
             
             {/* Modal Image Header Banner */}
             <div className="h-56 relative bg-cover bg-center flex-shrink-0" style={{ backgroundImage: `url(${selectedPlace.imageUrl})` }}>
@@ -304,12 +304,12 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
               <button
                 aria-label="Close details"
                 onClick={() => setSelectedPlace(null)}
-                className="absolute top-4 right-4 bg-black/60 text-white hover:bg-black/85 p-2 rounded-full border border-white/10 transition-colors"
+                className="absolute top-4 right-4 bg-black/60 text-zinc-900 hover:bg-black/85 p-2 rounded-full border border-white/10 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
               
-              <div className="absolute bottom-4 left-6 right-6 text-white space-y-1.5">
+              <div className="absolute bottom-4 left-6 right-6 text-zinc-900 space-y-1.5">
                 <span className="text-[9px] uppercase tracking-wider font-extrabold px-2.5 py-0.5 bg-indigo-600 rounded-full border border-indigo-500">
                   {selectedPlace.category}
                 </span>
@@ -411,7 +411,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
                   href={`https://maps.google.com/?q=${encodeURIComponent(selectedPlace.name + " " + selectedPlace.address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full text-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-100 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 py-2.5 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full text-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 py-2.5 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
                 >
                   <MapPin className="w-4 h-4" /> Get Directions
                 </a>

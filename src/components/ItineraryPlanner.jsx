@@ -26,7 +26,7 @@ function SortableActivity({ activity, onDelete }) {
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 p-4 rounded-xl shadow-sm hover:shadow transition-shadow group relative"
+      className="flex items-center gap-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800/80 p-4 rounded-xl shadow-sm hover:shadow transition-shadow group relative"
     >
       {/* Drag Handle */}
       <button
@@ -151,10 +151,10 @@ export default function ItineraryPlanner({ destination, apiKey }) {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto animate-fade-in">
       
       {/* Sidebar: Preferences Form */}
-      <div className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4 h-fit">
+      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm space-y-4 h-fit">
         <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800 pb-3">
           <Calendar className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-          <h3 className="font-bold text-white dark:text-white">Plan Builder</h3>
+          <h3 className="font-bold text-zinc-900 dark:text-white">Plan Builder</h3>
         </div>
 
         {/* Days Count */}
@@ -168,7 +168,7 @@ export default function ItineraryPlanner({ destination, apiKey }) {
                 onClick={() => setDuration(d)}
                 className={`flex-1 text-center py-1 text-xs font-bold rounded-md transition-all ${
                   duration === d
-                    ? 'bg-zinc-950 dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
+                    ? 'bg-white dark:bg-zinc-800 text-emerald-600 dark:text-emerald-400 shadow-sm'
                     : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-450 dark:hover:text-zinc-200'
                 }`}
               >
@@ -186,7 +186,7 @@ export default function ItineraryPlanner({ destination, apiKey }) {
             onChange={(e) => setPreferences(e.target.value)}
             placeholder="e.g. Slow-paced, traditional teahouses, vegetarian culinary options..."
             rows={3}
-            className="w-full text-xs bg-zinc-900 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-white dark:text-white transition-all placeholder:text-zinc-400"
+            className="w-full text-xs bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500 text-zinc-900 dark:text-white transition-all placeholder:text-zinc-400"
           />
         </div>
 

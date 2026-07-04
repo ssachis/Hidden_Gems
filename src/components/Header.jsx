@@ -2,6 +2,7 @@ import React from 'react';
 import { Globe, Sun, Moon, Sparkles } from 'lucide-react';
 
 export default function Header({ 
+  onOpenSettings, 
   darkMode, 
   onToggleDarkMode, 
   currentScreen, 
@@ -9,7 +10,7 @@ export default function Header({
   isDemoMode 
 }) {
   return (
-    <header className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-950/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
+    <header className="border-b border-zinc-200 dark:border-zinc-800 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-md sticky top-0 z-40 transition-all duration-300">
       <div className="max-w-[1600px] mx-auto px-6 py-4 flex items-center justify-between">
         
         {/* Logo */}
@@ -21,7 +22,7 @@ export default function Header({
             <Globe className="w-6 h-6 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-xl font-extrabold tracking-tight text-white dark:text-white flex items-center gap-1.5">
+            <h1 className="text-xl font-extrabold tracking-tight text-zinc-900 dark:text-white flex items-center gap-1.5">
               Under-The-Radar
               <span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-2 py-0.5 rounded-full font-medium flex items-center gap-0.5">
                 <Sparkles className="w-3 h-3" /> GenAI
@@ -55,7 +56,7 @@ export default function Header({
           {/* Theme Toggle */}
           <button
             onClick={onToggleDarkMode}
-            className="p-2 text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all duration-200"
+            className="p-2 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all duration-200"
             title="Toggle Theme"
           >
             {darkMode ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-zinc-600" />}
