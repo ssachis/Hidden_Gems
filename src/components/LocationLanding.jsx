@@ -119,7 +119,7 @@ export default function LocationLanding({ onLocationSelected }) {
       <div 
         className="absolute inset-0 bg-cover bg-center opacity-82 animate-ken-burns" 
         style={{ 
-          backgroundImage: `url('/bg-mountains.jpg')`,
+          backgroundImage: `url('./bg-mountains.jpg')`,
           imageRendering: '-webkit-optimize-contrast' // enhances browser rendering sharpness
         }}
       />
