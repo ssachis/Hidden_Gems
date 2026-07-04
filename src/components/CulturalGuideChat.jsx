@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, Sparkles, MessageCircle, HelpCircle } from 'lucide-react';
+import { Send, HelpCircle } from 'lucide-react';
 import { chatWithGuide } from '../services/geminiService';
 
 export default function CulturalGuideChat({ destination, apiKey }) {
@@ -19,7 +19,7 @@ export default function CulturalGuideChat({ destination, apiKey }) {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
     ]);
-  }, [destination.id]);
+  }, [destination.id, guide.greeting]);
 
   // Scroll to bottom
   useEffect(() => {

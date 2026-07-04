@@ -1,9 +1,6 @@
 import axios from 'axios';
 import { MOCK_DESTINATIONS } from './mockData';
 
-const callGeminiAPI = async (prompt, systemInstruction = null) => {
-  return "Mocked API";
-};
 
 // Generate an immersive historical and cultural story
 export const generateStory = async (cityId) => {

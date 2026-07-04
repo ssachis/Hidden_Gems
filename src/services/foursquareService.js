@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { MOCK_DESTINATIONS } from './mockData.js';
 
 const MOCK_IMAGE_MAP = {
   // Kyoto
@@ -17,8 +16,7 @@ const MOCK_IMAGE_MAP = {
   "bonci": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800&auto=format&fit=crop&q=80",
   "da enzo": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?w=800&auto=format&fit=crop&q=80",
   // Cairo
-  "pyramid": "https://images.unsplash.com/photo-1503177119275-0aa32b3a9368?w=800&auto=format&fit=crop&q=80",
-  "khan el-khalili": "https://images.unsplash.com/photo-1629721671030-a83d88e15c44?w=800&auto=format&fit=crop&q=80",
+    "khan el-khalili": "https://images.unsplash.com/photo-1629721671030-a83d88e15c44?w=800&auto=format&fit=crop&q=80",
   "mosque of ibn tulun": "https://images.unsplash.com/photo-1572019999435-081d4511ef5e?w=800&auto=format&fit=crop&q=80",
   "garbage city": "https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?w=800&auto=format&fit=crop&q=80",
   "koshary abou tarek": "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=800&auto=format&fit=crop&q=80",

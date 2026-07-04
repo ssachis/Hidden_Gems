@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import StorytellerPanel from './components/StorytellerPanel';
 import AttractionsGrid from './components/AttractionsGrid';
 import ItineraryPlanner from './components/ItineraryPlanner';
 import CulturalGuideChat from './components/CulturalGuideChat';
@@ -14,8 +13,7 @@ export default function App() {
   // Credentials & Settings States
   const [geminiKey, setGeminiKey] = useState(() => localStorage.getItem('gemini_key') || import.meta.env.VITE_GEMINI_API_KEY || '');
   const [foursquareKey, setFoursquareKey] = useState(() => localStorage.getItem('foursquare_key') || import.meta.env.VITE_FOURSQUARE_API_KEY || '');
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(() => {
+    const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('theme');
     return saved ? saved === 'dark' : true; // Default to dark mode for premium feel
   });
@@ -39,13 +37,6 @@ export default function App() {
       localStorage.setItem('theme', 'light');
     }
   }, [darkMode]);
-
-  const handleSaveKeys = (gemKey, fsqKey) => {
-    setGeminiKey(gemKey);
-    setFoursquareKey(fsqKey);
-    localStorage.setItem('gemini_key', gemKey);
-    localStorage.setItem('foursquare_key', fsqKey);
-  };
 
   const resolveDestination = (inputName) => {
     const clean = inputName.toLowerCase().trim();

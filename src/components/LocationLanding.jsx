@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, MapPin, Navigation, ArrowRight } from 'lucide-react';
+import { Globe, MapPin, ArrowRight } from 'lucide-react';
 
 export default function LocationLanding({ onLocationSelected }) {
   const [typedLocation, setTypedLocation] = useState('');

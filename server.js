@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import axios from 'axios';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { MOCK_DESTINATIONS } from './src/services/mockData.js';
 import { resolveImage } from './src/services/foursquareService.js';
 
@@ -9,6 +11,15 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5001;
+
+// Security Middleware
+app.use(helmet());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per window
+  message: "Too many requests from this IP, please try again later."
+});
+app.use('/api', limiter);
 
 app.use(cors());
 app.use(express.json());

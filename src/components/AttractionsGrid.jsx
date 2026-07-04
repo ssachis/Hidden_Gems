@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, MapPin, Star, Globe, X, ExternalLink } from 'lucide-react';
+import { Sparkles, MapPin, Star, X, ExternalLink } from 'lucide-react';
 import { getFoursquarePlaces } from '../services/foursquareService';
 
 // AI Behavior Constraints and Mock Responses mapped by Vibe

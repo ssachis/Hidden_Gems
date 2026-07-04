@@ -8,7 +8,7 @@ export default function StorytellerPanel({ destination, apiKey }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [speechUtterance, setSpeechUtterance] = useState(null);
 
-  const fetchNewStory = async () => {
+  const fetchNewStory = useCallback(async () => {
     setLoading(true);
     // Stop any speech playing
     if (window.speechSynthesis) {
@@ -18,7 +18,7 @@ export default function StorytellerPanel({ destination, apiKey }) {
     const data = await generateStory(destination.id, apiKey);
     setStory(data);
     setLoading(false);
-  };
+  }, [destination.id, apiKey]);
 
   useEffect(() => {
     fetchNewStory();
@@ -27,7 +27,7 @@ export default function StorytellerPanel({ destination, apiKey }) {
         window.speechSynthesis.cancel();
       }
     };
-  }, [destination.id, apiKey]);
+  }, [destination.id, apiKey, fetchNewStory]);
 
   // Set up speech synthesis
   useEffect(() => {

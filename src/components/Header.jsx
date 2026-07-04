@@ -2,7 +2,6 @@ import React from 'react';
 import { Globe, Sun, Moon, Sparkles } from 'lucide-react';
 
 export default function Header({ 
-  onOpenSettings, 
   darkMode, 
   onToggleDarkMode, 
   currentScreen, 

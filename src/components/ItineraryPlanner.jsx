@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Sparkles, Calendar, Plus, Trash2, Clock, MapPin, GripVertical, Compass } from 'lucide-react';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy, useSortable } from '@dnd-kit/sortable';
@@ -86,17 +86,17 @@ export default function ItineraryPlanner({ destination, apiKey }) {
     })
   );
 
-  const fetchItinerary = async () => {
+  const fetchItinerary = useCallback(async () => {
     setGenerating(true);
     const data = await generateItinerary(destination.id, duration, preferences, apiKey);
     setDays(data);
     setActiveDayIndex(0);
     setGenerating(false);
-  };
+  }, [destination.id, duration, preferences, apiKey]);
 
   useEffect(() => {
     fetchItinerary();
-  }, [destination.id]);
+  }, [destination.id, fetchItinerary]);
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
