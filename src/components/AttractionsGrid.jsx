@@ -171,6 +171,29 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
       const moodId = selectedMood?.id || 'peace';
       const behavior = AI_BEHAVIORS[moodId] || AI_BEHAVIORS.peace;
       
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+      if (isLocal) {
+        try {
+          console.log(`[Grid] Querying local proxy backend for matched-insights for: ${selectedPlace.name}`);
+          const response = await fetch('/api/matched-insights', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              placeName: selectedPlace.name,
+              moodText,
+              behaviorDescription: behavior.description
+            })
+          });
+          const parsed = await response.json();
+          setAiData(parsed);
+          setLoadingAi(false);
+          return;
+        } catch (err) {
+          console.warn("[Grid] Local proxy for matched-insights failed, falling back to direct / mock:", err.message);
+        }
+      }
+
       const keySet = apiKey && apiKey !== 'enter api key' && apiKey !== '';
 
       if (keySet) {

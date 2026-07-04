@@ -57,9 +57,21 @@ export const resolveImage = (name, category) => {
 };
 
 export const getFoursquarePlaces = async (cityId, customApiKey = null) => {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  
+  if (isLocal) {
+    try {
+      console.log(`[Foursquare] Querying local proxy backend for cityId: ${cityId}`);
+      const response = await axios.get(`/api/places?cityId=${cityId}`);
+      return response.data;
+    } catch (err) {
+      console.warn("[Foursquare] Local proxy failed or offline, falling back to frontend resolver:", err.message);
+    }
+  }
+
   let rawPlaces = [];
   
-  if (!customApiKey || customApiKey === 'enter api key') {
+  if (!customApiKey || customApiKey === 'enter api key' || customApiKey === '') {
     console.log(`[Foursquare] No API Key. Using mock data for: ${cityId}`);
     rawPlaces = MOCK_DESTINATIONS[cityId]?.attractions || [];
   } else {

@@ -36,7 +36,19 @@ export const generateStory = async (cityId, customApiKey = null) => {
   const destination = MOCK_DESTINATIONS[cityId];
   if (!destination) return null;
 
-  if (!customApiKey) {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  if (isLocal) {
+    try {
+      console.log(`[Gemini] Querying local proxy backend for story of: ${cityId}`);
+      const response = await axios.post('/api/story', { cityName: destination.name });
+      return response.data;
+    } catch (err) {
+      console.warn("[Gemini] Local story proxy failed, falling back to frontend direct/mock:", err.message);
+    }
+  }
+
+  if (!customApiKey || customApiKey === 'enter api key' || customApiKey === '') {
     console.log(`[Gemini] Demo Mode: Returning static story for ${cityId}`);
     return destination.story;
   }
@@ -66,7 +78,36 @@ export const generateItinerary = async (cityId, duration = 3, preferences = '', 
   const destination = MOCK_DESTINATIONS[cityId];
   if (!destination) return [];
 
-  if (!customApiKey) {
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
+  if (isLocal) {
+    try {
+      console.log(`[Gemini] Querying local proxy backend for itinerary for: ${cityId}`);
+      const response = await axios.post('/api/itinerary', {
+        cityName: destination.name,
+        moodName: preferences,
+        durationDays: duration
+      });
+      
+      // Map server day structure back to activities array format
+      const itinerary = response.data.itinerary.map(item => ({
+        id: `day-${item.day}`,
+        day: `Day ${item.day}`,
+        activities: item.stops.map((stop, sIdx) => ({
+          id: `act-d${item.day}-${sIdx}`,
+          time: sIdx === 0 ? "09:00 AM" : sIdx === 1 ? "02:00 PM" : "07:00 PM",
+          title: stop,
+          description: `Custom curated itinerary stop for a ${preferences} experience in the city.`,
+          location: destination.name
+        }))
+      }));
+      return itinerary;
+    } catch (err) {
+      console.warn("[Gemini] Local itinerary proxy failed, falling back to frontend direct/mock:", err.message);
+    }
+  }
+
+  if (!customApiKey || customApiKey === 'enter api key' || customApiKey === '') {
     console.log(`[Gemini] Demo Mode: Generating mock itinerary for ${cityId}`);
     // Generate a basic mock itinerary based on duration
     const items = destination.attractions;
@@ -126,8 +167,25 @@ export const chatWithGuide = async (cityId, messages, customApiKey = null) => {
   if (!destination) return "I'm sorry, I cannot assist with this city.";
 
   const guide = destination.guideProfile;
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-  if (!customApiKey) {
+  if (isLocal) {
+    try {
+      console.log(`[Gemini] Querying local proxy backend for guide chat: ${guide.name}`);
+      const lastMsg = messages[messages.length - 1]?.text || '';
+      const response = await axios.post('/api/chat', {
+        message: lastMsg,
+        history: messages.slice(0, -1),
+        guideName: guide.name,
+        guideTitle: guide.title
+      });
+      return response.data.response;
+    } catch (err) {
+      console.warn("[Gemini] Local chat proxy failed, falling back to frontend direct/mock:", err.message);
+    }
+  }
+
+  if (!customApiKey || customApiKey === 'enter api key' || customApiKey === '') {
     console.log(`[Gemini] Demo Mode: Generating mock guide response for ${cityId}`);
     const lastMsg = messages[messages.length - 1]?.text?.toLowerCase() || '';
     
