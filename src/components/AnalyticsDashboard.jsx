@@ -87,7 +87,7 @@ export default function AnalyticsDashboard({ destination, darkMode }) {
         {metrics.map((m, idx) => (
           <div
             key={idx}
-            className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center justify-between"
+            className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-5 shadow-sm flex items-center justify-between"
           >
             <div className="space-y-1">
               <span className="text-xs font-semibold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">
@@ -112,11 +112,11 @@ export default function AnalyticsDashboard({ destination, darkMode }) {
       <div className="space-y-6">
         
         {/* Chart 1 Card */}
-        <div className="bg-white dark:bg-[#0c0c0f] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
+        <div className="bg-zinc-950 dark:bg-[#0c0c0f] border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm space-y-4">
           <div className="flex items-center gap-2 border-b border-zinc-100 dark:border-zinc-800/80 pb-3">
             <Sparkles className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             <div>
-              <h3 className="font-bold text-zinc-900 dark:text-white text-sm">
+              <h3 className="font-bold text-white dark:text-white text-sm">
                 Cultural Focus Distribution
               </h3>
               <p className="text-[11px] text-zinc-500 dark:text-zinc-400">

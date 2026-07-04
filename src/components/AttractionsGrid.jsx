@@ -83,6 +83,9 @@ function TiltCard({ place, onClick, index }) {
 
   return (
     <div
+      role="button"
+      aria-label={`View details for ${place.name}`}
+      tabIndex={0}
       onClick={onClick}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
@@ -263,6 +266,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
         {categories.map((cat) => (
           <button
             key={cat}
+            aria-label={`Filter by ${cat}`}
             onClick={() => setActiveFilter(cat)}
             className={`px-4 py-2 text-xs font-semibold rounded-full transition-all duration-300 ${
               activeFilter === cat
@@ -290,7 +294,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
       {/* Place Details Modal (AI matched layer) */}
       {selectedPlace && (
         <div className="fixed inset-0 bg-zinc-950/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
+          <div className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-scale-up max-h-[90vh] flex flex-col">
             
             {/* Modal Image Header Banner */}
             <div className="h-56 relative bg-cover bg-center flex-shrink-0" style={{ backgroundImage: `url(${selectedPlace.imageUrl})` }}>
@@ -298,6 +302,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
               
               {/* Close Button */}
               <button
+                aria-label="Close details"
                 onClick={() => setSelectedPlace(null)}
                 className="absolute top-4 right-4 bg-black/60 text-white hover:bg-black/85 p-2 rounded-full border border-white/10 transition-colors"
               >
@@ -406,7 +411,7 @@ export default function AttractionsGrid({ destination, apiKey, selectedMood }) {
                   href={`https://maps.google.com/?q=${encodeURIComponent(selectedPlace.name + " " + selectedPlace.address)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full text-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-800 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 py-2.5 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
+                  className="w-full text-center bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-750 text-zinc-100 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 py-2.5 rounded-xl font-medium text-xs transition-colors flex items-center justify-center gap-1.5"
                 >
                   <MapPin className="w-4 h-4" /> Get Directions
                 </a>

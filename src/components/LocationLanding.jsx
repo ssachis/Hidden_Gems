@@ -1,115 +1,125 @@
 import React, { useState } from 'react';
-import { Globe, MapPin, Navigation, ArrowRight } from 'lucide-react';
+import { Globe, MapPin, Navigation, ArrowRight, AlertCircle } from 'lucide-react';
+
+// Haversine great-circle distance in km — accurate at all latitudes, unlike
+// naive Euclidean distance on raw lat/lng degrees (which badly distorts
+// anywhere far from the equator and near the poles).
+function haversineDistanceKm(lat1, lng1, lat2, lng2) {
+  const toRad = (deg) => (deg * Math.PI) / 180;
+  const R = 6371;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(a));
+}
 
 export default function LocationLanding({ onLocationSelected }) {
   const [typedLocation, setTypedLocation] = useState('');
   const [detecting, setDetecting] = useState(false);
+  const [detectError, setDetectError] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!typedLocation.trim()) return;
+    setDetectError('');
     onLocationSelected(typedLocation.trim());
   };
 
   const handleDetectLocation = () => {
     setDetecting(true);
+    setDetectError('');
     let resolved = false;
 
-    console.log("Detect location clicked. Initializing browser geolocation query...");
-
-    const handleFallback = (reason) => {
+    // IMPORTANT: this only reports a failure — it never guesses a city.
+    // Silently defaulting to a fixed city (e.g. New York) on every timeout
+    // or permission denial is what caused detection to "randomly" land on
+    // the wrong place before.
+    const handleFailure = (reason) => {
       if (resolved) return;
       resolved = true;
-      console.warn(`Geolocation fallback triggered. Reason: ${reason}. Defaulting to New York City.`);
-      setTimeout(() => {
-        setDetecting(false);
-        onLocationSelected("New York City");
-      }, 1000);
+      console.warn(`Geolocation failed: ${reason}`);
+      setDetecting(false);
+      setDetectError("Couldn't detect your location automatically. Please type your city above instead.");
     };
 
-    // Set a maximum timeout of 4500ms to allow geocoding request to resolve
+    // Covers browsers/permission dialogs that never fire the geolocation
+    // success or error callback at all.
     const fallbackTimeout = setTimeout(() => {
-      handleFallback("Timeout (Hanging permission dialog or network latency)");
-    }, 4500);
+      handleFailure('Timed out waiting for browser geolocation response');
+    }, 6000);
 
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          if (resolved) return;
-
-          try {
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
-
-            console.log("Successfully retrieved coordinates:");
-            console.log("Lat:", latitude);
-            console.log("Lng:", longitude);
-
-            // Fetch actual City/State name using OpenStreetMap Nominatim reverse geocoder
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`, {
-              headers: {
-                'Accept-Language': 'en'
-              }
-            });
-            const data = await res.json();
-            
-            clearTimeout(fallbackTimeout);
-            resolved = true;
-
-            const address = data.address || {};
-            const resolvedCity = address.city || address.town || address.village || address.suburb || address.state || address.county || "Detected Location";
-            
-            console.log(`Nominatim Geocoded Location resolved to: ${resolvedCity}`);
-            
-            setDetecting(false);
-            onLocationSelected(resolvedCity);
-          } catch (err) {
-            console.error("Geocoding failed, falling back to coordinate mapping:", err);
-            
-            // Fallback coordinate mapping to closest preloaded city
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const demoCities = [
-              { id: 'kyoto', lat: 35.0116, lng: 135.7681, name: 'Kyoto' },
-              { id: 'rome', lat: 41.9028, lng: 12.4964, name: 'Rome' },
-              { id: 'cairo', lat: 30.0444, lng: 31.2357, name: 'Cairo' },
-              { id: 'cusco', lat: -13.5319, lng: -71.9675, name: 'Cusco' },
-              { id: 'newyork', lat: 40.7128, lng: -74.0060, name: 'New York City' }
-            ];
-
-            let closest = demoCities[0];
-            let minDist = Infinity;
-
-            demoCities.forEach(c => {
-              const dist = Math.sqrt(Math.pow(lat - c.lat, 2) + Math.pow(lng - c.lng, 2));
-              if (dist < minDist) {
-                minDist = dist;
-                closest = c;
-              }
-            });
-            
-            clearTimeout(fallbackTimeout);
-            resolved = true;
-            setDetecting(false);
-            onLocationSelected(closest.name);
-          }
-        },
-        (error) => {
-          clearTimeout(fallbackTimeout);
-          console.error("Error getting location coordinates:", error);
-          handleFallback(`Geolocation Error (Code ${error.code}: ${error.message})`);
-        },
-        { 
-          enableHighAccuracy: true,
-          timeout: 4000,
-          maximumAge: 0
-        }
-      );
-    } else {
+    if (!navigator.geolocation) {
       clearTimeout(fallbackTimeout);
-      console.warn("Navigator Geolocation is not supported by this browser.");
-      handleFallback("Browser unsupported");
+      handleFailure('Geolocation not supported by this browser');
+      return;
     }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        if (resolved) return;
+        const { latitude, longitude } = position.coords;
+
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+          );
+
+          if (!res.ok) throw new Error(`Nominatim responded with ${res.status}`);
+          const data = await res.json();
+
+          const address = data.address || {};
+          const resolvedCity =
+            address.city || address.town || address.village || address.suburb ||
+            address.state || address.county || null;
+
+          if (!resolvedCity) throw new Error('No usable address fields in geocoder response');
+
+          clearTimeout(fallbackTimeout);
+          resolved = true;
+          setDetecting(false);
+          onLocationSelected(resolvedCity);
+        } catch (err) {
+          console.warn('Reverse geocoding failed, falling back to nearest known city:', err.message);
+
+          // Fallback: map coordinates to the closest of our demo cities using
+          // real great-circle distance instead of naive lat/lng subtraction.
+          const demoCities = [
+            { id: 'kyoto', lat: 35.0116, lng: 135.7681, name: 'Kyoto' },
+            { id: 'rome', lat: 41.9028, lng: 12.4964, name: 'Rome' },
+            { id: 'cairo', lat: 30.0444, lng: 31.2357, name: 'Cairo' },
+            { id: 'cusco', lat: -13.5319, lng: -71.9675, name: 'Cusco' },
+            { id: 'newyork', lat: 40.7128, lng: -74.0060, name: 'New York City' }
+          ];
+
+          let closest = demoCities[0];
+          let minDist = Infinity;
+          demoCities.forEach((c) => {
+            const dist = haversineDistanceKm(latitude, longitude, c.lat, c.lng);
+            if (dist < minDist) {
+              minDist = dist;
+              closest = c;
+            }
+          });
+
+          clearTimeout(fallbackTimeout);
+          resolved = true;
+          setDetecting(false);
+          onLocationSelected(closest.name);
+        }
+      },
+      (error) => {
+        clearTimeout(fallbackTimeout);
+        handleFailure(`Geolocation error (code ${error.code}: ${error.message})`);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0
+      }
+    );
   };
 
   return (
@@ -175,16 +185,16 @@ export default function LocationLanding({ onLocationSelected }) {
 
           {/* Divider */}
           <div className="flex items-center gap-3 text-zinc-500 text-[10px] font-bold py-0.5">
-            <div className="flex-1 h-[1px] bg-white/5" />
+            <div className="flex-1 h-[1px] bg-zinc-950/5" />
             <span>OR</span>
-            <div className="flex-1 h-[1px] bg-white/5" />
+            <div className="flex-1 h-[1px] bg-zinc-950/5" />
           </div>
 
           {/* Location button */}
           <button
             onClick={handleDetectLocation}
             disabled={detecting}
-            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/15 text-white rounded-xl py-3 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
+            className="w-full bg-zinc-950/5 hover:bg-zinc-950/10 border border-white/10 hover:border-white/15 text-white rounded-xl py-3 text-xs font-semibold flex items-center justify-center gap-2 transition-all"
           >
             {detecting ? (
               <>
@@ -198,6 +208,14 @@ export default function LocationLanding({ onLocationSelected }) {
               </>
             )}
           </button>
+
+          {/* Detection error message — shown instead of silently guessing a city */}
+          {detectError && (
+            <div className="flex items-start gap-1.5 text-left text-[10px] text-amber-300 bg-amber-950/30 border border-amber-500/20 rounded-lg px-3 py-2">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              <span>{detectError}</span>
+            </div>
+          )}
         </div>
       </div>
 

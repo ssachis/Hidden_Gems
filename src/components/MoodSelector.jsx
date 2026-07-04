@@ -44,7 +44,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
       <div>
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200 transition-colors group"
         >
           <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
           Change Location
@@ -99,7 +99,7 @@ export default function MoodSelector({ locationName, onSelectMood, onBack }) {
                 {mood.tags.map((tag, tIdx) => (
                   <span 
                     key={tIdx} 
-                    className="text-[9px] bg-white/10 text-zinc-100 border border-white/5 px-2 py-0.5 rounded-full font-sans font-medium"
+                    className="text-[9px] bg-zinc-950/10 text-zinc-100 border border-white/5 px-2 py-0.5 rounded-full font-sans font-medium"
                   >
                     {tag}
                   </span>

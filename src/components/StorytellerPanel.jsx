@@ -69,7 +69,7 @@ export default function StorytellerPanel({ destination, apiKey }) {
     <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
       
       {/* Narrative Card */}
-      <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 relative overflow-hidden">
+      <div className="bg-zinc-950 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl p-6 md:p-8 shadow-sm space-y-6 relative overflow-hidden">
         
         {/* Soft background glow */}
         <div className="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -98,7 +98,7 @@ export default function StorytellerPanel({ destination, apiKey }) {
             {apiKey && (
               <button
                 onClick={fetchNewStory}
-                className="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                className="p-2 bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-zinc-100 dark:hover:text-zinc-200 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                 title="Regenerate Narrative"
               >
                 <RefreshCw className="w-4 h-4" />
