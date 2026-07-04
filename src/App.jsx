@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
-import SettingsModal from './components/SettingsModal';
 import StorytellerPanel from './components/StorytellerPanel';
 import AttractionsGrid from './components/AttractionsGrid';
 import ItineraryPlanner from './components/ItineraryPlanner';
@@ -50,14 +49,14 @@ export default function App() {
 
   const resolveDestination = (inputName) => {
     const clean = inputName.toLowerCase().trim();
-    
+
     // Check keyword matching
     if (clean.includes('kyoto') || clean.includes('japan') || clean.includes('tokyo') || clean.includes('osaka')) return 'kyoto';
     if (clean.includes('rome') || clean.includes('italy') || clean.includes('milan') || clean.includes('florence') || clean.includes('venice')) return 'rome';
     if (clean.includes('cairo') || clean.includes('egypt') || clean.includes('pyramid') || clean.includes('alexandria') || clean.includes('giza')) return 'cairo';
     if (clean.includes('cusco') || clean.includes('peru') || clean.includes('machu') || clean.includes('lima') || clean.includes('andes')) return 'cusco';
     if (clean.includes('new york') || clean.includes('nyc') || clean.includes('manhattan') || clean.includes('brooklyn') || clean.includes('america') || clean.includes('usa') || clean.includes('united states')) return 'newyork';
-    
+
     // If keys are set, build a custom destination object dynamically!
     if ((geminiKey && geminiKey !== 'enter api key') || (foursquareKey && foursquareKey !== 'enter api key')) {
       return {
@@ -88,7 +87,7 @@ export default function App() {
         events: []
       };
     }
-    
+
     // Default to Kyoto in demo mode if nothing matches, and show matching banner
     return 'kyoto';
   };
@@ -96,12 +95,12 @@ export default function App() {
   const handleLocationSelected = (name) => {
     setLocationName(name);
     setCurrentScreen('mood');
-    
+
     // Check if we need to show mapping banner
     const clean = name.toLowerCase().trim();
-    const matchesDemo = ['kyoto','japan','tokyo','osaka','rome','italy','milan','florence','venice','cairo','egypt','pyramid','alexandria','giza','cusco','peru','machu','lima','andes','new york','nyc','manhattan','brooklyn','america','usa','united states'].some(kw => clean.includes(kw));
+    const matchesDemo = ['kyoto', 'japan', 'tokyo', 'osaka', 'rome', 'italy', 'milan', 'florence', 'venice', 'cairo', 'egypt', 'pyramid', 'alexandria', 'giza', 'cusco', 'peru', 'machu', 'lima', 'andes', 'new york', 'nyc', 'manhattan', 'brooklyn', 'america', 'usa', 'united states'].some(kw => clean.includes(kw));
     const keysSet = (geminiKey && geminiKey !== 'enter api key') || (foursquareKey && foursquareKey !== 'enter api key');
-    
+
     if (!matchesDemo && !keysSet) {
       // Find what mapped name corresponds to Kyoto
       setDemoMappingMessage(`Demo Mode Active: Mapping "${name}" to Kyoto. (Add keys in Settings to search anywhere!)`);
@@ -180,10 +179,10 @@ export default function App() {
         )}
 
         {currentScreen === 'mood' && (
-          <MoodSelector 
-            locationName={locationName} 
-            onSelectMood={handleSelectMood} 
-            onBack={handleBackToLocation} 
+          <MoodSelector
+            locationName={locationName}
+            onSelectMood={handleSelectMood}
+            onBack={handleBackToLocation}
           />
         )}
 
@@ -235,8 +234,8 @@ export default function App() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-2.5 text-xs font-semibold whitespace-nowrap transition-all rounded-t-xl border-b-2 -mb-[2px] ${activeTab === tab.id
-                      ? 'border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 bg-emerald-50/10 dark:bg-emerald-950/10'
-                      : 'border-transparent text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200'
+                    ? 'border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400 bg-emerald-50/10 dark:bg-emerald-950/10'
+                    : 'border-transparent text-zinc-500 hover:text-zinc-100 dark:text-zinc-400 dark:hover:text-zinc-200'
                     }`}
                 >
                   {tab.label}
