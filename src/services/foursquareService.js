@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { MOCK_DESTINATIONS } from './mockData';
+import { MOCK_DESTINATIONS } from './mockData.js';
 
 const MOCK_IMAGE_MAP = {
   // Kyoto
